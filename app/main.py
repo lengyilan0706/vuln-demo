@@ -54,7 +54,7 @@ def download():
 def ping():
     """Check whether a host answers."""
     host = request.args.get("host", "127.0.0.1")
-    out = subprocess.check_output("ping -c 1 " + host, shell=True)
+    out = subprocess.check_output(["ping", "-c", "1", host])
     return {"output": out.decode("utf-8", "replace")}
 
 
