@@ -42,8 +42,11 @@ def order(order_id):
 @app.route("/download")
 def download():
     """Download a report by file name."""
-    name = request.args.get("name", "summary.txt")
-    path = os.path.join("/srv/reports", name)
+    name = os.path.basename(request.args.get("name", "summary.txt"))
+    base = os.path.realpath("/srv/reports")
+    path = os.path.realpath(os.path.join(base, name))
+    if not path.startswith(base + os.sep):
+        return jsonify({"error": "invalid file name"}), 400
     return send_file(path)
 
 
@@ -51,7 +54,7 @@ def download():
 def ping():
     """Check whether a host answers."""
     host = request.args.get("host", "127.0.0.1")
-    out = subprocess.check_output("ping -c 1 " + host, shell=True)
+    out = subprocess.check_output(["ping", "-c", "1", host])
     return {"output": out.decode("utf-8", "replace")}
 
 
