@@ -42,8 +42,11 @@ def order(order_id):
 @app.route("/download")
 def download():
     """Download a report by file name."""
-    name = request.args.get("name", "summary.txt")
-    path = os.path.join("/srv/reports", name)
+    name = os.path.basename(request.args.get("name", "summary.txt"))
+    base = os.path.realpath("/srv/reports")
+    path = os.path.realpath(os.path.join(base, name))
+    if not path.startswith(base + os.sep):
+        return jsonify({"error": "invalid file name"}), 400
     return send_file(path)
 
 
